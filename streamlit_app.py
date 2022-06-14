@@ -203,6 +203,8 @@ def get_custom_metric():
 log_page_load()
 
 step_size = st.sidebar.number_input('Step size', value=10, min_value=1)
+number_best_images_to_show = st.sidebar.number_input('Number of best images to show', value=100, min_value=1)
+# fps = st.sidebar.number_input('FPS', value=10)
 st.sidebar.markdown('---')
 metrics = show_sidebar_metrics()
 st.sidebar.markdown('---')
@@ -240,7 +242,6 @@ current_image = st.empty()
 best_frame_score_field = st.empty()
 best_image = st.empty()
 filename_scores = []
-FPS = 10
 time_last_frame = 0
 for i, (image, success_loading_image) in enumerate(frames_generator):
     if not success_loading_image:
@@ -258,10 +259,14 @@ for i, (image, success_loading_image) in enumerate(frames_generator):
         best_image.image(filename_scores[0][0])
 
 
-    if (time.time() - time_last_frame) > 1 / FPS:
+    # if (time.time() - time_last_frame) > 1 / fps or i % step_size == 0:
         image_other_colors = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         current_image.image(image_other_colors)
         time_last_frame = time.time()
 
 
+# show the best images
+st.title('Best images')
+for filename_path, scores in filename_scores[:number_best_images_to_show]:
+    st.image(filename_path, use_column_width=True, caption=f'Score: {scores["Avg"]:.3f}')
 
