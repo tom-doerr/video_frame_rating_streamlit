@@ -5,6 +5,8 @@ import os
 from clip_client import Client
 from docarray import Document
 import PIL
+import grpc
+import jina
 
 st.set_page_config(page_title='AI Video Frame Rater', initial_sidebar_state="auto")
 
@@ -73,7 +75,7 @@ def rate_image(image_path, target, opposite, attempt=0):
                 )
             ]
         )
-    except (ConnectionError, AioRpcError) as e:
+    except (ConnectionError, grpc.aio.AioRpcError, jina.excepts.BadClient) as e:
         print(e)
         print(f'Retrying... {attempt}')
         time.sleep(2**attempt)
@@ -84,7 +86,7 @@ def rate_image(image_path, target, opposite, attempt=0):
     return score
 
 def process_image(photo_file, metrics):  
-    col1, col2, col3 = st.columns([10,10,10])
+    # col1, col2, col3 = st.columns([10,10,10])
     # with st.spinner('Loading...'):
         # with col1:
             # st.write('')
@@ -203,7 +205,7 @@ def get_custom_metric():
 log_page_load()
 
 step_size = st.sidebar.number_input('Step size', value=10, min_value=1)
-number_best_images_to_show = st.sidebar.number_input('Number of best images to show', value=100, min_value=1)
+number_best_images_to_show = int(st.sidebar.number_input('Number of best images to show', value=100, min_value=1))
 # fps = st.sidebar.number_input('FPS', value=10)
 st.sidebar.markdown('---')
 metrics = show_sidebar_metrics()
@@ -270,6 +272,7 @@ for i, (image, success_loading_image) in enumerate(frames_generator):
 
 # show the best images
 st.title('Best images')
+print("number_best_images_to_show:", number_best_images_to_show)
 for filename_path, scores in filename_scores[:number_best_images_to_show]:
     st.image(filename_path, use_column_width=True, caption=f'Score: {scores["Avg"]:.3f}')
 
