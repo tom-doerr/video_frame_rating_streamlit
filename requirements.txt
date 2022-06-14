@@ -70,7 +70,7 @@ neovim==0.3.1
 nest-asyncio==1.5.5
 notebook==6.4.12
 numpy==1.22.4
-opencv-python==4.6.0.66
+opencv-python-headless==4.6.0.66
 packaging==21.3
 pandas==1.4.2
 pandocfilters==1.5.0
