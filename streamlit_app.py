@@ -73,7 +73,7 @@ def rate_image(image_path, target, opposite, attempt=0):
                 )
             ]
         )
-    except ConnectionError as e:
+    except (ConnectionError, AioRpcError) as e:
         print(e)
         print(f'Retrying... {attempt}')
         time.sleep(2**attempt)
@@ -227,6 +227,9 @@ if custom_key:
 os.makedirs(IMAGES_FOLDER, exist_ok=True)
 
 
+if len(metrics) == 0:
+    st.write('No metrics selected')
+    st.stop()
 
 
 
